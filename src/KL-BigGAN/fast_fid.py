@@ -17,6 +17,7 @@ INCEPTION_INPUT = 'ExpandDims:0'
 INCEPTION_OUTPUT = 'logits:0'
 INCEPTION_FINAL_POOL = 'pool_3:0'
 
+
 def calculate_activation_statistics(images, sess, batch_size=50, verbose=False):
     """Calculation of the statistics used by the FID.
     Params:
@@ -321,10 +322,10 @@ def main(args):
 
     # grab proper inception moments
     if 'multi' not in args.exp_id:
-        fname = '/atlas/u/kechoi/fair_generative_modeling/fid_stats/unbiased_all_gender_fid_stats.npz'
+        fname = './fid_stats/unbiased_all_gender_fid_stats.npz'
     else:
         # multi-attribute experiment
-        fname = '/atlas/u/kechoi/fair_generative_modeling/fid_stats/unbiased_all_multi_fid_stats.npz'
+        fname = './fid_stats/unbiased_all_multi_fid_stats.npz'
 
     # load both biased and unbiased stats
     print('loading unbiased stats from {}'.format(fname))
@@ -333,28 +334,27 @@ def main(args):
     unbiased_stats = (real_mu, real_cov)
 
     # load biased stats
-    fname = '/atlas/u/tsong/data/fid/fid_stats_celeba.npz'
-    print('loading biased stats from: {}'.format(fname))
+    fname = './fid_stats/fid_stats_celeba.npz'
+    print('loading original celebA FID stats from: {}'.format(fname))
     f = np.load(fname)
     real_mu, real_cov = f['mu'][:], f['sigma'][:]
     biased_stats = (real_mu, real_cov)
 
     # start running 10 sets of FID scores
-    samples_root = '/atlas/u/kechoi/fair_generative_modeling/src/KL-BigGAN/samples'
+    samples_root = './samples'
     fid_unbiased_db = np.zeros(10)
     fid_biased_db = np.zeros(10)
     print('fixed evaluation to be FID samples')
+
+    # iterate through 10 sets of 10K samples for FID computation
     for i in range(10):
         # load samples
-        try:
-            npz_filename = '%s/%s/fid_samples_%s.npz' % (
-                samples_root, args.exp_id, i)
-            gen_images = np.load(npz_filename)['x']
-        except:
-            npz_filename = '/atlas/u/trsingh/fair_generative_modeling/src/KL-BigGAN/samples/{}/fid_samples_{}.npz'.format(
-                args.exp_id, i)
-            gen_images = np.load(npz_filename)['x']
+        npz_filename = '%s/%s/fid_samples_%s.npz' % (
+            samples_root, args.exp_id, i)
+        gen_images = np.load(npz_filename)['x']
         gen_images = np.transpose(gen_images, (0,2,3,1))
+
+        # samples shape
         print(real_mu.shape, real_cov.shape, gen_images.shape)
         start = time.time()
         unbiased_fid = compute_scores_tf_activations(
@@ -378,6 +378,7 @@ def main(args):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('exp_id', type=str, default='test', help='name of directory in samples')
+    parser.add_argument('exp_id', type=str, 
+                        help='name of experiment ID in samples')
     args = parser.parse_args()
     main(args)

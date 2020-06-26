@@ -384,7 +384,7 @@ def prepare_parser():
         ' (default: %(default)s)')
 
     ### Eval stuff ###
-    parser.add_argument('--mode', type=str, default='fair', help='[fair, fid]')
+    parser.add_argument('--mode', type=str, default='fid', help='[fair, fid]')
 
     return parser
 

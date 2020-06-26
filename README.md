@@ -49,17 +49,23 @@ These pre-computed FID statistics are for model checkpointing (during GAN traini
 
 
 ## 5) Train generative model (BigGAN)
-## CHANGE NAME: if multi, then append --multi 1
+A sample script to train the model can be found in `scripts/`:
 
-```
-python3 src/KL-BigGAN/train.py --shuffle --batch_size 128 --parallel --num_G_accumulations 1 --num_D_accumulations 1 --num_D_steps 4 --G_lr 2e-4 --D_lr 2e-4 --dataset CA64 --data_root /atlas/u/kechoi/fair_generative_modeling/data --G_ortho 0.0 --G_attn 0 --D_attn 0 --G_init N02 --D_init N02 --ema --use_ema --ema_start 1000 --save_every 1000 --test_every 1000 --num_best_copies 50 --num_save_copies 1 --loss_type hinge --seed 777 --num_epochs 150 --start_eval 40 --reweight 1 --alpha 1.0 --name_suffix experiment_id --bias 90_10 --perc=1.0
-```
+`bash run_celeba_90_10_perc1.0_impweight.sh`
+
+You should add different arguments for different model configurations. For example:
+(a) for the multi-attribute setting, append ` --multi 1`
+(b) for the equi-weighted baseline, append ` --reweight 0`
+(c) for the conditional baseline, append `--conditional 1 --y 1 --reweight 0`
+(d) for the importance-weighted model, append `--reweight 1 --alpha 1.0`
 
 
 ## Sample from trained model
-```
-python3 src/KL-BigGAN/sample.py --shuffle --batch_size 64 --parallel --num_G_accumulations 1 --num_D_accumulations 1 --num_D_steps 4 --G_lr 2e-4 --D_lr 2e-4 --dataset CA64 --data_root /atlas/u/kechoi/fair_generative_modeling/data --G_ortho 0.0 --G_attn 0 --D_attn 0 --G_init N02 --D_init N02 --ema --sample_npz --save_every 1000 --test_every 1000 --num_best_copies 500 --num_save_copies 2 --loss_type hinge --seed 777 --name_suffix icml_multi_perc0.5_conditional --bias multi --perc 0.5 --multi 1 --conditional 1 --y 1 --reweight 0 --num_epochs 200 --start_eval 50 --load_weights best_fid35
-```
+A sample script to sample from the (trained) model can be found in `scripts/`:
+`bash sample_celeba_90_10_perc1.0_impweight.sh`
+
+You can either append the arguemnt `--load_weights name_of_weights` to load a specific set of weights, or pass in the `--name_suffix my_experiment` argument for the script to find the most recent checkpoint with the best FID.
+
 
 ## Compute FID scores
 

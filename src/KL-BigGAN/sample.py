@@ -1,5 +1,9 @@
 ''' Sample
    This script loads a pretrained net and a weightsfile and sample '''
+import os
+import glob
+import sys
+
 import functools
 import math
 import numpy as np
@@ -22,15 +26,14 @@ import losses
 from clf_models import ResNet18, BasicBlock
 
 
-CLF_PATH = '/atlas/u/kechoi/fair_generative_modeling/results/gender_clf/model_best.pth.tar'
-MULTI_CLF_PATH = '/atlas/u/kechoi/fair_generative_modeling/results/multi_clf/model_best.pth.tar'
+CLF_PATH = './results/attr_clf/model_best.pth.tar'
+MULTI_CLF_PATH = './results/multi_clf/model_best.pth.tar'
 
 
 def classify_examples(model, sample_path):
     """
     classifies generated samples into appropriate classes 
     """
-    import numpy as np
     model.eval()
     preds = []
     probs = []
@@ -73,7 +76,7 @@ def run(config):
 
     # update config (see train.py for explanation)
     config['resolution'] = utils.imsize_dict[config['dataset']]
-    config['n_classes'] = 1  # HACK
+    config['n_classes'] = 1
     if config['conditional']:
         config['n_classes'] = 2
     config['G_activation'] = utils.activation_dict[config['G_nl']]
@@ -103,62 +106,26 @@ def run(config):
     # Load weights
     print('Loading weights...')
     assert config['mode'] in ['fair', 'fid']
+    print('sampling from model with best FID scores...')
+    config['mode'] = 'fid'  # can change this to 'fair', but this assumes access to ground-truth attribute classifier (and labels)
 
-    # find best weights for either FID or fair
-    import os
-    import glob
-    # grab best weights according to FID/fair mode
-    print('TODO: REMOVE THIS')
+    # find best weights for either FID or fair checkpointing
     weights_root = config['weights_root']
-    # weights_root = '/atlas/u/kechoi/fair_generative_modeling/src/KL-BigGAN/rebuttal_scripts/weights'
-    # weights_root = '/atlas/u/kechoi/fair_generative_modeling/scripts/weights'
     ckpts = glob.glob(os.path.join(weights_root, experiment_name, 'state_dict_best_{}*'.format(config['mode'])))
     best_ckpt = 'best_{}{}'.format(config['mode'],len(ckpts)-1)
     config['load_weights'] = best_ckpt
 
-    # only make samples that don't exist
-    # sample_path = '%s/%s/{}_samples_0.npz' % (config['samples_root'], experiment_name, config['mode'])
-    # if os.path.exists(sample_path):
-    #     print('samples already exist for {}, exiting'.format(config['mode']))
-    #     quit()
+    # load weights to sample from generator
+    utils.load_weights(G if not (config['use_ema']) else None, None, state_dict, weights_root, experiment_name, config['load_weights'], G if config['ema'] and config['use_ema'] else None,
+        strict=False, load_optim=False)
 
-    # uncomment this later
-    # Here is where we deal with the ema--load ema weights or load normal weights
-    import sys
-    try:
-        # utils.load_weights(G if not (config['use_ema']) else None, None, state_dict, config['weights_root'], experiment_name, config['load_weights'], G if config['ema'] and config['use_ema'] else None,
-        #     strict=False, load_optim=False)
-        utils.load_weights(G if not (config['use_ema']) else None, None, state_dict, weights_root, experiment_name, config['load_weights'], G if config['ema'] and config['use_ema'] else None,
-            strict=False, load_optim=False)
-        # print('weights found')
-        # quit()
-    except FileNotFoundError:
-        # print('NOTE: does not exist, loading from other directory')
-        # new_weights_root = '/atlas/u/trsingh/fair_generative_modeling/src/KL-BigGAN/weights'
-        # ckpts = glob.glob(os.path.join(new_weights_root,experiment_name, 'state_dict_best_{}*'.format(config['mode'])))
-        # best_ckpt = 'best_{}{}'.format(config['mode'],len(ckpts)-1)
-        # config['load_weights'] = best_ckpt
-
-        # # issue with the classes :(
-        # try:
-        #     utils.load_weights(G if not (config['use_ema']) else None, None, state_dict, new_weights_root, experiment_name, config['load_weights'], G if config['ema'] and config['use_ema'] else None,strict=False, load_optim=False)
-        # except RuntimeError:
-        #     config['n_classes'] = 4
-        #     G = model.Generator(**config).cuda()
-        #     utils.load_weights(G if not (config['use_ema']) else None, None, state_dict, new_weights_root, experiment_name, config['load_weights'], G if config['ema'] and config['use_ema'] else None,strict=False, load_optim=False)
-        # print('weights *now* found, proceeding')
-        pass
     # Update batch size setting used for G
     G_batch_size = max(config['G_batch_size'], config['batch_size'])
     z_, y_ = utils.prepare_z_y(G_batch_size, G.dim_z, config['n_classes'],
                                device=device, fp16=config['G_fp16'],
                                z_var=config['z_var'])
-
-    if config['G_eval_mode']:
-        print('Putting G in eval mode..')
-        G.eval()
-    else:
-        print('G is in %s mode...' % ('training' if G.training else 'eval'))
+    print('Putting G in eval mode..')
+    G.eval()
 
     # Sample function
     sample = functools.partial(utils.sample, G=G, z_=z_, y_=y_, config=config)
@@ -167,11 +134,8 @@ def run(config):
               config['num_standing_accumulations'])
         utils.accumulate_standing_stats(G, z_, y_, config['n_classes'],
                                         config['num_standing_accumulations'])
-    # end of uncomment this later
 
     # # # Sample a number of images and save them to an NPZ, for use with TF-Inception
-
-    # # check sample status
     sample_path = '%s/%s/' % (config['samples_root'], experiment_name)
     print('looking in sample path {}'.format(sample_path))
     if not os.path.exists(sample_path):
@@ -179,55 +143,30 @@ def run(config):
         os.mkdir(sample_path)
 
     # Lists to hold images and labels for images
-    if config['mode'] == 'fid':
-        print('saving FID samples')
-        for k in range(10):  # need to do this for 10 repeated runs
-            npz_filename = '%s/%s/fid_samples_%s.npz' % (
-                config['samples_root'], experiment_name, k)
-            if os.path.exists(npz_filename):
-                print('samples already exist, skipping...')
-                continue
-            x, y = [], []
-            print('Sampling %d images and saving them to npz...' %
-                  config['sample_num_npz'])
-            for i in trange(int(np.ceil(config['sample_num_npz'] / float(G_batch_size)))):
-                with torch.no_grad():
-                    images, labels = sample()
-                x += [np.uint8(255 * (images.cpu().numpy() + 1) / 2.)]
-                y += [labels.cpu().numpy()]
-            x = np.concatenate(x, 0)[:config['sample_num_npz']]
-            y = np.concatenate(y, 0)[:config['sample_num_npz']]
-            print('checking labels: {}'.format(y.sum()))
-            print('Images shape: %s, Labels shape: %s' % (x.shape, y.shape))
-            npz_filename = '%s/%s/fid_samples_%s.npz' % (
-                config['samples_root'], experiment_name, k)
-            print('Saving npz to %s...' % npz_filename)
-            np.savez(npz_filename, **{'x': x, 'y': y})
-    else:
-        print('saving fair samples')
-        # this was initially commented out
-        for k in range(10):  # need to do this for 10 repeated runs
-            npz_filename = '%s/%s/fair_samples_%s.npz' % (
-                config['samples_root'], experiment_name, k)
-            if os.path.exists(npz_filename):
-                print('samples already exist, skipping...')
-                continue
-            x, y = [], []
-            print('Sampling %d images and saving them to npz...' %
-                  config['sample_num_npz'])
-            for i in trange(int(np.ceil(config['sample_num_npz'] / float(G_batch_size)))):
-                with torch.no_grad():
-                    images, labels = sample()
-                x += [np.uint8(255 * (images.cpu().numpy() + 1) / 2.)]
-                y += [labels.cpu().numpy()]
-            x = np.concatenate(x, 0)[:config['sample_num_npz']]
-            y = np.concatenate(y, 0)[:config['sample_num_npz']]
-            print('checking labels: {}'.format(y.sum()))
-            print('Images shape: %s, Labels shape: %s' % (x.shape, y.shape))
-            npz_filename = '%s/%s/fair_samples_%s.npz' % (
-                config['samples_root'], experiment_name, k)
-            print('Saving npz to %s...' % npz_filename)
-            np.savez(npz_filename, **{'x': x, 'y': y})
+    print('saving samples from best FID checkpoint')
+    # sampling 10 sets of 10K samples
+    for k in range(10):
+        npz_filename = '%s/%s/fid_samples_%s.npz' % (
+            config['samples_root'], experiment_name, k)
+        if os.path.exists(npz_filename):
+            print('samples already exist, skipping...')
+            continue
+        x, y = [], []
+        print('Sampling %d images and saving them to npz...' %
+              config['sample_num_npz'])
+        for i in trange(int(np.ceil(config['sample_num_npz'] / float(G_batch_size)))):
+            with torch.no_grad():
+                images, labels = sample()
+            x += [np.uint8(255 * (images.cpu().numpy() + 1) / 2.)]
+            y += [labels.cpu().numpy()]
+        x = np.concatenate(x, 0)[:config['sample_num_npz']]
+        y = np.concatenate(y, 0)[:config['sample_num_npz']]
+        print('checking labels: {}'.format(y.sum()))
+        print('Images shape: %s, Labels shape: %s' % (x.shape, y.shape))
+        npz_filename = '%s/%s/fid_samples_%s.npz' % (
+            config['samples_root'], experiment_name, k)
+        print('Saving npz to %s...' % npz_filename)
+        np.savez(npz_filename, **{'x': x, 'y': y})
 
     # classify proportions
     metrics = {'l2': 0, 'l1': 0, 'kl': 0}
@@ -235,15 +174,9 @@ def run(config):
     l1_db = np.zeros(10)
     kl_db = np.zeros(10)
 
-    if config['mode'] == 'fair':
-        fname = '%s/%s/fair_disc.p' % (
-                config['samples_root'], experiment_name)
-    else:
-        fname = '%s/%s/fair_disc_fid_samples.p' % (
-                config['samples_root'], experiment_name)
-    # if os.path.exists(fname):
-    #     print('metrics already exist, exiting')
-    #     quit()
+    # output file
+    fname = '%s/%s/fair_disc_fid_samples.p' % (
+            config['samples_root'], experiment_name)
 
     # load classifier
     if not config['multi']:
@@ -271,7 +204,7 @@ def run(config):
     # number of classes
     probs_db = np.zeros((10, 10000, n_classes))
     for i in range(10):
-        # fair or fid samples
+        # grab appropriate samples
         npz_filename = '{}/{}/{}_samples_{}.npz'.format(
             config['samples_root'], experiment_name, config['mode'], i)
         preds, probs = classify_examples(clf, npz_filename)
