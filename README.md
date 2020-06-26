@@ -6,10 +6,10 @@ This repo contains a reference implementation for fairgen as described in the pa
 > Paper: https://arxiv.org/abs/1910.12008 </br>
 
 
-## 1) Data Setup:
-(1) Download the CelebA dataset here (http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) into the `data/` directory (if elsewhere, note the path)
+## 1) Data setup:
+(a) Download the CelebA dataset here (http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) into the `data/` directory (if elsewhere, note the path for step b)
 
-(2) Preprocess the CelebA dataset for faster training:
+(b) Preprocess the CelebA dataset for faster training:
 ```
 python3 preprocess_celeba.py --data_dir=/path/to/downloaded/dataset/celeba/ --out_dir=../data --partition=train
 ```
@@ -17,34 +17,38 @@ python3 preprocess_celeba.py --data_dir=/path/to/downloaded/dataset/celeba/ --ou
 You should run this script for `--partition=[train, val, test]` to cache all the necessary data. The preprocessed files will then be saved in `data/`.
 
 
-## 2) Pre-train Attribute Classifier
+## 2) Pre-train attribute classifier
 ### for a single-attribute:
 ```
-python3 train_attribute_clf.py celeba ./results/gender_clf
+python3 train_attribute_clf.py celeba ./results/attr_clf
 ```
 
-### for multiple attributes:
-```
-python3 train_attribute_clf.py celeba ./results/multi_clf --multi=True
-```
+For multiple attributes, add the `--multi=True` flag.
 
-## Pre-compute unbiased FID scores:
-```
-python3 KL-BigGAN/calculate_unbiased_inception_moments.py --fid_type multi
-python3 KL-BigGAN/calculate_unbiased_inception_moments.py --fid_type gender
-# or maybe we can just attach the FID statistics here instead
-```
+Then, the trained attribute classifier will be saved in `./results/attr_clf` and will be used for downstream evaluation for generative model training.
 
 
 # 3) Pre-train density ratio classifier
+The density ratio classifier should be trained for the appropriate `bias` and `perc` setting, which can be adjusted in the script below:
 ```
-python3 get_density_ratios.py celeba celeba --small=[0.1, 0.25, 0.5, 1.0] --balance_type=[90_10, 80_20, multi]
+python3 get_density_ratios.py celeba celeba --perc=[0.1, 0.25, 0.5, 1.0] --bias=[90_10, 80_20, multi]
 ```
 Note that the best density ratio classifier will be saved in its corresponding directory under `./data/`
 
 
-# Train generative model (BigGAN)
-## Train GAN
+## 4) Pre-compute unbiased FID scores:
+We have provided both (a) biased and (b) unbiased FID statistics in the `fid_stats/` directory.
+
+(a) `fid_stats/fid_stats_celeba.npz` contains the original activations from the *entire* CelebA dataset, as in: https://github.com/ajbrock/BigGAN-PyTorch
+
+(b) `fid_stats/unbiased_all_gender_fid_stats.npz` contains activations from the entire CelebA dataset, where the gender attribute (female, male) are balanced.
+
+(c) `fid_stats/unbiased_all_multi_fid_stats.npz` contains activations from the entire CelebA dataset, where the 4 attribute classes (black hair, other hair, female, male) are balanced.
+
+These pre-computed FID statistics are for model checkpointing (during GAN training) and downstream evaluation of sample quality only, and should be substituted for other statistics when using a different dataset/attribute splits.
+
+
+## 5) Train generative model (BigGAN)
 ## CHANGE NAME: if multi, then append --multi 1
 
 ```
