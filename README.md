@@ -60,7 +60,7 @@ You should add different arguments for different model configurations. For examp
 (d) for the importance-weighted model, append `--reweight 1 --alpha 1.0`
 
 
-## Sample from trained model
+## 6) Sample from trained model
 A sample script to sample from the (trained) model can be found in `scripts/`:
 
 `bash sample_celeba_90_10_perc1.0_impweight.sh`
@@ -68,7 +68,7 @@ A sample script to sample from the (trained) model can be found in `scripts/`:
 You can either append the argument `--load_weights name_of_weights` to load a specific set of weights, or pass in the `--name_suffix my_experiment` argument for the script to find the most recent checkpoint with the best FID.
 
 
-## Compute FID scores
+## 7) Compute FID scores
 To compute FID scores after running the sampling script, (using the original Tensorflow implementation), run the following:
 `python3 fast_fid.py my_experiment --multi=[True,False]`
 
