@@ -33,10 +33,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# BASE_PATH = '/atlas/u/kechoi/fair_generative_modeling/'
-BASE_PATH = './'
-
-
 if __name__ == "__main__":
 	import argparse
 	parser = argparse.ArgumentParser()

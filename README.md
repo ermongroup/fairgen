@@ -6,7 +6,7 @@ This repo contains a reference implementation for fairgen as described in the pa
 > Paper: https://arxiv.org/abs/1910.12008 </br>
 
 
-## Data Setup:
+## 1) Data Setup:
 (1) Download the CelebA dataset here (http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) into the `data/` directory (if elsewhere, note the path)
 
 (2) Preprocess the CelebA dataset for faster training:
@@ -17,7 +17,7 @@ python3 preprocess_celeba.py --data_dir=/path/to/downloaded/dataset/celeba/ --ou
 You should run this script for `--partition=[train, val, test]` to cache all the necessary data. The preprocessed files will then be saved in `data/`.
 
 
-## Pre-train Attribute Classifier
+## 2) Pre-train Attribute Classifier
 ### for a single-attribute:
 ```
 python3 train_attribute_clf.py celeba ./results/gender_clf
@@ -28,7 +28,6 @@ python3 train_attribute_clf.py celeba ./results/gender_clf
 python3 train_attribute_clf.py celeba ./results/multi_clf --multi=True
 ```
 
-
 ## Pre-compute unbiased FID scores:
 ```
 python3 KL-BigGAN/calculate_unbiased_inception_moments.py --fid_type multi
@@ -37,10 +36,11 @@ python3 KL-BigGAN/calculate_unbiased_inception_moments.py --fid_type gender
 ```
 
 
-# Pre-train density ratio classifier
+# 3) Pre-train density ratio classifier
 ```
 python3 get_density_ratios.py celeba celeba --small=[0.1, 0.25, 0.5, 1.0] --balance_type=[90_10, 80_20, multi]
 ```
+Note that the best density ratio classifier will be saved in its corresponding directory under `./data/`
 
 
 # Train generative model (BigGAN)
