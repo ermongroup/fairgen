@@ -62,13 +62,26 @@ You should add different arguments for different model configurations. For examp
 
 ## Sample from trained model
 A sample script to sample from the (trained) model can be found in `scripts/`:
+
 `bash sample_celeba_90_10_perc1.0_impweight.sh`
 
-You can either append the arguemnt `--load_weights name_of_weights` to load a specific set of weights, or pass in the `--name_suffix my_experiment` argument for the script to find the most recent checkpoint with the best FID.
+You can either append the argument `--load_weights name_of_weights` to load a specific set of weights, or pass in the `--name_suffix my_experiment` argument for the script to find the most recent checkpoint with the best FID.
 
 
 ## Compute FID scores
+To compute FID scores after running the sampling script, (using the original Tensorflow implementation), run the following:
+`python3 fast_fid.py my_experiment --multi=[True,False]`
+
+This code assumes that there are 10 sets of 10K samples generated from the model (as per `sample.py`), and will evaluate the samples on both (a) the original FID scores and (b) unbiased FID scores (as per Step #4)
 
 
 ## References
 If you find this work useful in your research, please consider citing the following paper:
+```
+@article{grover2019fair,
+  title={Fair Generative Modeling via Weak Supervision},
+  author={Grover, Aditya and Choi, Kristy and Shu, Rui and Ermon, Stefano},
+  journal={arXiv preprint arXiv:1910.12008},
+  year={2019}
+}
+```

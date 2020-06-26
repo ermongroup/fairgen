@@ -321,10 +321,12 @@ def main(args):
     print('running {}'.format(args.exp_id))
 
     # grab proper inception moments
-    if 'multi' not in args.exp_id:
+    if args.multi == False:
+        print('running FID calculation for single-attribute experiment')
         fname = './fid_stats/unbiased_all_gender_fid_stats.npz'
     else:
         # multi-attribute experiment
+        print('running FID for multi-attribute experiment')
         fname = './fid_stats/unbiased_all_multi_fid_stats.npz'
 
     # load both biased and unbiased stats
@@ -380,5 +382,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('exp_id', type=str, 
                         help='name of experiment ID in samples')
+    parser.add_argument('--multi', type=bool,
+                        help='whether the experiment is multi-attribute')
     args = parser.parse_args()
     main(args)
