@@ -40,7 +40,8 @@ if __name__ == "__main__":
 	parser.add_argument('model_name', type=str, help='celeba')
 	parser.add_argument('--batch-size', type=int, default=64,
 	                    help='minibatch size [default: 64]')
-	parser.add_argument('--ckpt-path', type=str, default=None, help='if 					test=True, path to clf checkpoint')
+	parser.add_argument('--ckpt-path', type=str, default=None, 
+											help='if test=True, path to clf checkpoint')
 	parser.add_argument('--lr', type=float, default=1e-4,
 	                    help='learning rate [default: 1e-4]')
 	parser.add_argument('--epochs', type=int, default=10,
