@@ -22,8 +22,7 @@ import gzip
 import pickle
 
 
-# BASE_PATH = '/atlas/u/kechoi/fair_generative_modeling/data/'
-BASE_PATH = './data/'
+BASE_PATH = '../data/'
 
 
 class BagOfDatasets(Dataset):
