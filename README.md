@@ -7,7 +7,7 @@ This repo contains a reference implementation for fairgen as described in the pa
 
 
 ## 1) Data setup:
-(a) Download the CelebA dataset here (http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) into the `data/` directory (if elsewhere, note the path for step b)
+(a) Download the CelebA dataset here (http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html) into the `data/` directory (if elsewhere, note the path for step b). Of the download links provided, choose `Align&Cropped Images` and download the `img_align_celeba` folder.
 
 (b) Preprocess the CelebA dataset for faster training:
 ```
@@ -80,7 +80,7 @@ If you find this work useful in your research, please consider citing the follow
 ```
 @article{grover2019fair,
   title={Fair Generative Modeling via Weak Supervision},
-  author={Grover, Aditya and Choi, Kristy and Shu, Rui and Ermon, Stefano},
+  author={Grover, Aditya and Choi, Kristy and Singh, Trisha and Shu, Rui and Ermon, Stefano},
   journal={arXiv preprint arXiv:1910.12008},
   year={2019}
 }

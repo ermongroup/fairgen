@@ -114,7 +114,7 @@ def load_attributes(paths, partition, data_dir):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('data_dir', type=str, 
+    parser.add_argument('--data_dir', default='../data/', type=str, 
         help='path to downloaded celebA dataset (e.g. /path/to/celeba/')
     parser.add_argument('--out_dir', default='../data/', type=str, 
         help='destination of outputs')
