@@ -29,6 +29,8 @@ if __name__ == "__main__":
 	                    help='learning rate [default: 0.001]')
 	parser.add_argument('--epochs', type=int, default=10,
 	                    help='number of epochs [default: 10]')
+	parser.add_argument('--log_interval', type=int, default=10,
+	                    help='number of steps to log after during training')
 	parser.add_argument('--class_idx', type=int, default=20,
 						help='CelebA class label for training.')
 	parser.add_argument('--multi', type=bool, default=False, 
