@@ -349,7 +349,7 @@ def main(args):
     print('fixed evaluation to be FID samples')
 
     # iterate through 10 sets of 10K samples for FID computation
-    for i in range(1):
+    for i in range(10):
         # load samples
         npz_filename = '%s/%s/fid_samples_%s.npz' % (
             samples_root, args.exp_id, i)
