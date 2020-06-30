@@ -26,8 +26,8 @@ import losses
 from clf_models import ResNet18, BasicBlock
 
 
-CLF_PATH = './results/attr_clf/model_best.pth.tar'
-MULTI_CLF_PATH = './results/multi_clf/model_best.pth.tar'
+CLF_PATH = '../results/attr_clf/model_best.pth.tar'
+MULTI_CLF_PATH = '../results/multi_clf/model_best.pth.tar'
 
 
 def classify_examples(model, sample_path):

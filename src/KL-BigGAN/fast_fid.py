@@ -323,11 +323,11 @@ def main(args):
     # grab proper inception moments
     if args.multi == False:
         print('running FID calculation for single-attribute experiment')
-        fname = './fid_stats/unbiased_all_gender_fid_stats.npz'
+        fname = '../../fid_stats/unbiased_all_gender_fid_stats.npz'
     else:
         # multi-attribute experiment
         print('running FID for multi-attribute experiment')
-        fname = './fid_stats/unbiased_all_multi_fid_stats.npz'
+        fname = '../../fid_stats/unbiased_all_multi_fid_stats.npz'
 
     # load both biased and unbiased stats
     print('loading unbiased stats from {}'.format(fname))
@@ -336,7 +336,7 @@ def main(args):
     unbiased_stats = (real_mu, real_cov)
 
     # load biased stats
-    fname = './fid_stats/fid_stats_celeba.npz'
+    fname = '../../fid_stats/fid_stats_celeba.npz'
     print('loading original celebA FID stats from: {}'.format(fname))
     f = np.load(fname)
     real_mu, real_cov = f['mu'][:], f['sigma'][:]
@@ -349,7 +349,7 @@ def main(args):
     print('fixed evaluation to be FID samples')
 
     # iterate through 10 sets of 10K samples for FID computation
-    for i in range(10):
+    for i in range(1):
         # load samples
         npz_filename = '%s/%s/fid_samples_%s.npz' % (
             samples_root, args.exp_id, i)
