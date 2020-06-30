@@ -172,6 +172,7 @@ if __name__ == "__main__":
 		num_examples = 0.
 		preds = []
 		true_labels = []
+		probs = []
 
 		for batch_idx, data_list in enumerate(train_loader):
 			# concatenate data and labels from both balanced + unbalanced, and make sure that each minibatch is balanced
