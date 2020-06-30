@@ -7,7 +7,7 @@ python3 train.py \
 --G_lr 2e-4 \
 --D_lr 2e-4 \
 --dataset CA64 \
---data_root ./data \
+--data_root ../../data \
 --G_ortho 0.0 \
 --G_attn 0 --D_attn 0 \
 --G_init N02 --D_init N02 \

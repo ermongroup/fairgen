@@ -89,7 +89,7 @@ if __name__ == "__main__":
 		raise NotImplementedError
 
 	# save outputs in correct directory
-	args.out_dir = './data/celeba_{}'.format(bias)
+	args.out_dir = '../data/celeba_{}'.format(bias)
 	print('outputs will be saved to: {}'.format(args.out_dir))
 	if not os.path.isdir(args.out_dir):
 	    os.makedirs(args.out_dir)
@@ -204,6 +204,7 @@ if __name__ == "__main__":
 			correct += (pred == target).sum()
 			preds.append(pred)
 			probs.append(probas)
+			true_labels.append(target)
 
 			if not args.test:
 				# backprop

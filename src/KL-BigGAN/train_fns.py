@@ -12,8 +12,8 @@ import losses
 from clf_models import ResNet18, BasicBlock
 
 # NOTE: this is only for the binary attribute classifier!
-CLF_PATH = './results/attr_clf/model_best.pth.tar'
-MULTI_CLF_PATH = './results/multi_clf/model_best.pth.tar'
+CLF_PATH = '../results/attr_clf/model_best.pth.tar'
+MULTI_CLF_PATH = '../results/multi_clf/model_best.pth.tar'
 
 
 # Dummy training function for debugging

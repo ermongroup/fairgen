@@ -31,7 +31,7 @@ from torch.utils.data import DataLoader
 import datasets as dset
 
 
-DATA_PATH = './data/'
+DATA_PATH = '../../data/'
 
 
 def prepare_parser():

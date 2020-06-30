@@ -230,9 +230,9 @@ def run(config):
         # Test every epoch (not specified interval)
         if (epoch >= config['start_eval']):
             # First, find correct inception moments
-            data_moments = './fid_stats/unbiased_all_gender_fid_stats.npz'
+            data_moments = '../../fid_stats/unbiased_all_gender_fid_stats.npz'
             if config['multi']:
-                data_moments = './fid_stats/unbiased_all_multi_fid_stats.npz'
+                data_moments = '../../fid_stats/unbiased_all_multi_fid_stats.npz'
                 fid_type = 'multi'
             else:
                 fid_type = 'gender'
