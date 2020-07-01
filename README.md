@@ -16,6 +16,7 @@ python3 preprocess_celeba.py --data_dir=/path/to/downloaded/dataset/celeba/ --ou
 
 You should run this script for `--partition=[train, val, test]` to cache all the necessary data. The preprocessed files will then be saved in `data/`.
 
+To split the data for multiple attributes, check `notebooks/multi-attribute data and unbiased FID splits.ipynb`.
 
 ## 2) Pre-train attribute classifier
 For a single-attribute:
