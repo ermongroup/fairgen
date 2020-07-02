@@ -40,8 +40,7 @@ if __name__ == "__main__":
 	parser.add_argument('model_name', type=str, help='celeba')
 	parser.add_argument('--batch-size', type=int, default=64,
 	                    help='minibatch size [default: 64]')
-	parser.add_argument('--ckpt-path', type=str, default=None, 
-											help='if test=True, path to clf checkpoint')
+	parser.add_argument('--ckpt-path', type=str, default=None, help='if 					test=True, path to clf checkpoint')
 	parser.add_argument('--lr', type=float, default=1e-4,
 	                    help='learning rate [default: 1e-4]')
 	parser.add_argument('--epochs', type=int, default=10,
@@ -116,8 +115,8 @@ if __name__ == "__main__":
 				m_idx = int(to_shrink * 0.2)
 			f_idx = females[0:f_idx]
 			m_idx = males[0:m_idx]
-			print('females: {}'.format(len(f_idx)/to_shrink))
-			print('males: {}'.format(len(m_idx)/to_shrink))
+
+			# aggregate all data
 			d = torch.cat([d[f_idx], d[m_idx]])
 			l = torch.cat([l[f_idx], l[m_idx]])
 			g = torch.cat([g[f_idx], g[m_idx]])
@@ -139,11 +138,7 @@ if __name__ == "__main__":
 			b_idx = b[0:b_idx]
 			c_idx = c[0:c_idx]
 			e_idx = e[0:e_idx]
-			# print stats
-			print('00: {}'.format(len(a_idx)/to_shrink))
-			print('01: {}'.format(len(b_idx)/to_shrink))
-			print('10: {}'.format(len(c_idx)/to_shrink))
-			print('11: {}'.format(len(e_idx)/to_shrink))
+
 			# aggregate all data
 			d = torch.cat([d[a_idx], d[b_idx], d[c_idx], d[e_idx]])
 			l = torch.cat([l[a_idx], l[b_idx], l[c_idx], l[e_idx]])
@@ -171,8 +166,6 @@ if __name__ == "__main__":
 		correct = 0.
 		num_examples = 0.
 		preds = []
-		true_labels = []
-		probs = []
 
 		for batch_idx, data_list in enumerate(train_loader):
 			# concatenate data and labels from both balanced + unbalanced, and make sure that each minibatch is balanced
@@ -203,8 +196,6 @@ if __name__ == "__main__":
 			num_examples += target.size(0)
 			correct += (pred == target).sum()
 			preds.append(pred)
-			probs.append(probas)
-			true_labels.append(target)
 
 			if not args.test:
 				# backprop
@@ -220,7 +211,6 @@ if __name__ == "__main__":
 		# aggregate results
 		train_acc = float(correct)/num_examples
 		preds = torch.cat(preds)
-		true_labels = torch.cat(true_labels)
 		preds = np.ravel(preds.data.cpu().numpy())
 		
 		return train_acc, preds
@@ -309,8 +299,7 @@ if __name__ == "__main__":
 		valid_labels, valid_probs = run_loop()
 		y_valid = valid_labels.data.cpu().numpy()
 		valid_prob_pos = valid_probs.data.cpu().numpy()
-
-		print('running through different bins:')
+		# assess calibration
 		for bins in [5, 6, 7, 8, 9, 10]:
 			fraction_of_positives, mean_predicted_value = calibration_curve(y_valid, valid_prob_pos[:, 1], n_bins=bins)
 
@@ -379,8 +368,7 @@ if __name__ == "__main__":
 	valid_labels, valid_probs = run_loop()
 	y_valid = valid_labels.data.cpu().numpy()
 	valid_prob_pos = valid_probs.data.cpu().numpy()
-
-	print('running through different bins:')
+	# assess calibration
 	for bins in [3, 4, 5, 6, 7, 8, 9, 10]:
 		fraction_of_positives, mean_predicted_value = calibration_curve(y_valid, valid_prob_pos[:, 1], n_bins=bins)
 

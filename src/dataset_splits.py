@@ -168,7 +168,7 @@ def build_90_10_unbalanced_datasets_clf_celeba(dataset_name, split, perc=1.0):
 	unbalanced_labels = labels[unbalanced_indices][:, 20]
 	print('unbalanced dataset ratio: {}'.format(np.unique(unbalanced_labels.numpy(), return_counts=True)))
 
-	print('converting labels from gender to balanced/unbalanced...')
+	print('converting attribute labels to balanced/unbalanced...')
 	data_balanced_labels = torch.ones_like(balanced_labels)  # y = 1 for balanced
 	data_unbalanced_labels = torch.zeros_like(unbalanced_labels)  # y = 0 for unbalanced
 
@@ -243,7 +243,7 @@ def build_80_20_unbalanced_datasets_clf_celeba(dataset_name, split, idx=20, perc
 	unbalanced_labels = labels[unbalanced_indices][:,20]
 	print('unbalanced dataset ratio: {}'.format(np.unique(unbalanced_labels.numpy(), return_counts=True)))
 
-	print('converting labels from gender to balanced/unbalanced...')
+	print('converting attribute labels to balanced/unbalanced...')
 	data_balanced_labels = torch.ones_like(balanced_labels)  # y = 1 for balanced
 	data_unbalanced_labels = torch.zeros_like(unbalanced_labels)  # y = 0 for unbalanced
 
@@ -312,7 +312,7 @@ def build_multi_datasets_clf_celeba(dataset_name, split, perc=1.0):
 	unbalanced_labels = multi_labels[unbalanced_indices]
 	print('unbalanced dataset ratio: {}'.format(np.unique(unbalanced_labels.numpy(), return_counts=True)))
 
-	print('converting labels from gender to balanced/unbalanced...')
+	print('converting attribute labels to balanced/unbalanced...')
 	data_balanced_labels = torch.ones_like(balanced_labels)  # y = 1 for balanced
 	data_unbalanced_labels = torch.zeros_like(unbalanced_labels)  # y = 0 for unbalanced
 
