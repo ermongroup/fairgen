@@ -29,7 +29,7 @@ For multiple attributes, add the `--multi=True` flag.
 python3 train_attribute_clf.py celeba ./results/multi_clf -- multi=True
 ```
 
-Then, the trained attribute classifier will be saved in `./results/attr_clf` and will be used for downstream evaluation for generative model training.
+Then, the trained attribute classifier will be saved in `./results/attr_clf` (`./results/multi_clf`) and will be used for downstream evaluation for generative model training. Note the path where these classifiers are saved, as they will be needed for GAN training + evaluation.
 
 
 ## 3) Pre-train density ratio classifier
@@ -37,7 +37,7 @@ The density ratio classifier should be trained for the appropriate `bias` and `p
 ```
 python3 get_density_ratios.py celeba celeba --perc=[0.1, 0.25, 0.5, 1.0] --bias=[90_10, 80_20, multi]
 ```
-Note that the best density ratio classifier will be saved in its corresponding directory under `./data/`
+Note that the best density ratio classifier will be saved in its corresponding directory under `./data/`. 
 
 
 ## 4) Pre-compute unbiased FID scores:
