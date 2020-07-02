@@ -63,6 +63,8 @@ You should add different arguments for different model configurations. For examp
 (c) for the conditional baseline, append `--conditional 1 --y 1 --reweight 0`
 (d) for the importance-weighted model, append `--reweight 1 --alpha 1.0`
 
+Note the argument for `--name_suffix my_experiment`, as you will need it for sampling and computing FID scores.
+
 
 ## 6) Sample from trained model
 A sample script to sample from the (trained) model can be found in `scripts/`:
@@ -74,9 +76,9 @@ You can either append the argument `--load_weights name_of_weights` to load a sp
 
 ## 7) Compute FID scores
 To compute FID scores after running the sampling script, (using the original Tensorflow implementation), run the following:
-`python3 fast_fid.py my_experiment --multi=[True,False]`
+`python3 fast_fid.py my_experiment --multi=[True,False] --n_replicates=10`
 
-This code assumes that there are 10 sets of 10K samples generated from the model (as per `sample.py`), and will evaluate the samples on both (a) the original FID scores and (b) unbiased FID scores (as per Step #4)
+This code assumes that there are 10 sets (`n_replicates`) of 10K samples generated from the model (as per `sample.py`), and will evaluate the samples on both (a) the original FID scores and (b) unbiased FID scores (as per Step #4). `my_experiment` refers to the `--name_suffix my_experiment` parameter from Step 5.
 
 
 ## References

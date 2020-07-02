@@ -344,12 +344,12 @@ def main(args):
 
     # start running 10 sets of FID scores
     samples_root = './samples'
-    fid_unbiased_db = np.zeros(10)
-    fid_biased_db = np.zeros(10)
+    fid_unbiased_db = np.zeros(args.n_replicates)
+    fid_biased_db = np.zeros(args.n_replicates)
     print('fixed evaluation to be FID samples')
 
     # iterate through 10 sets of 10K samples for FID computation
-    for i in range(10):
+    for i in range(args.n_replicates):
         # load samples
         npz_filename = '%s/%s/fid_samples_%s.npz' % (
             samples_root, args.exp_id, i)
@@ -384,5 +384,7 @@ if __name__ == '__main__':
                         help='name of experiment ID in samples')
     parser.add_argument('--multi', type=bool,
                         help='whether the experiment is multi-attribute')
+    parser.add_argument('--n_replicates', type=int, default=10,
+                        help='number of sets of 10K samples for evaluation.')
     args = parser.parse_args()
     main(args)
