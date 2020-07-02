@@ -25,6 +25,9 @@ python3 train_attribute_clf.py celeba ./results/attr_clf
 ```
 
 For multiple attributes, add the `--multi=True` flag.
+```
+python3 train_attribute_clf.py celeba ./results/multi_clf -- multi=True
+```
 
 Then, the trained attribute classifier will be saved in `./results/attr_clf` and will be used for downstream evaluation for generative model training.
 
