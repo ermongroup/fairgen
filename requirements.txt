@@ -1,6 +1,6 @@
 torch==1.4.0
 tensorflow_hub==0.8.0
-opencv_python==3.4.1.15
+opencv_python==4.2.0.32
 seaborn==0.8.1
 imageio==2.3.0
 tqdm==4.23.1
